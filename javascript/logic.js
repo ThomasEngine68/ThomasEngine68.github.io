@@ -1,10 +1,10 @@
-function createNDimArray(dimensions, chance) {
+function createNDimArray(dimensions, chance, rng) {
 	if (dimensions.length > 0) {
 		var dim = dimensions[0];
 		var rest = dimensions.slice(1);
 		var newArray = new Array();
 		for (var i = 0; i < dim; i++) {
-			newArray[i] = createNDimArray(rest, chance);
+			newArray[i] = createNDimArray(rest, chance, rng);
 		}
 		return newArray;
 	} else {
@@ -13,8 +13,18 @@ function createNDimArray(dimensions, chance) {
 			goal: false,
 			visited: false
 		};
-		area.open = Math.random() > chance;
+		area.open = rng() > chance;
 		return area;
+	}
+}
+
+function getRng(seed) {
+	var a = seed * 658723;
+	return function() {
+		var t = a += 0x6D2B79F5;
+		t = Math.imul(t ^ t >>> 15, t | 1);
+		t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+		return ((t ^ t >>> 14) >>> 0) / 4294967296;
 	}
 }
 
@@ -43,11 +53,14 @@ function addStartEnd(maze) {
 	max.open = true;
 }
 
-function createPlayableMaze(dimensions, chance, requiereBackTrack) {
+function createPlayableMaze(dimensions, chance, requiereBackTrack, seed) {
+	if(!seed) seed = Math.random();
+	console.log(seed)
+	var rng = getRng(seed);
 	var maze;
 	var tries = 0;
 	var areasTested = 0;
-	var maxAreasTested = 100000;
+	var maxAreasTested = 80000;
 	var maxTries = 5000;
 	var minDistance = 0
 	if (requiereBackTrack) minDistance = calculateMinDistance(dimensions);
@@ -57,7 +70,7 @@ function createPlayableMaze(dimensions, chance, requiereBackTrack) {
 		tries++;
 		if (tries > maxTries) break;
 		if (areasTested > maxAreasTested) break;
-		maze = createNDimArray(dimensions, chance);
+		maze = createNDimArray(dimensions, chance, rng);
 		addStartEnd(maze);
 		var stats = isPassable(dimensions, maze);
 		passed = stats.passed && stats.chain.length > minDistance;
@@ -87,7 +100,7 @@ function isPassable(dimensions, maze) {
 		firstCoordinates.push(0);
 	});
 	var newCoordinateArray = [];
-	var maxAreasTested = 10000;
+	var maxAreasTested = 25000;
 	newCoordinateArray.push({
 		chain: [],
 		coordinates: firstCoordinates
