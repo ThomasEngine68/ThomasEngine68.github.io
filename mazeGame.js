@@ -14,13 +14,12 @@ function Control(props) {
 	return React.createElement(
 		"div",
 		{ style: {
-				width: "80px"
+				width: "50px"
 			} },
 		React.createElement(
 			"p",
 			{ style: { textAlign: "center" } },
-			"Dimension ",
-			props.dimensionIndex
+			props.dimensionIndex + 1
 		),
 		React.createElement(
 			"div",
@@ -34,32 +33,19 @@ function Control(props) {
 			React.createElement(
 				"button",
 				{ className: "button", disabled: !props.moves.validUp, onClick: props.onClickUp },
-				"UP"
+				"\u2B06"
 			),
 			React.createElement(
-				"table",
-				null,
-				React.createElement(
-					"tbody",
-					null,
-					[].concat(_toConsumableArray(props.areasOfDimension)).reverse().map(function (area, index) {
-						return React.createElement(
-							"tr",
-							{ key: index },
-							React.createElement("td", { className: "\n\t\t\t\t\t\t\t\t" + (area.open ? "openMazeTile" : "walledMazeTile") + "\n\t\t\t\t\t\t\t\t" + (area.player ? "hasPlayer" : "") + "\n\t\t\t\t\t\t\t\t" + (area.goal ? "hasGoal" : "") + "\n\t\t\t\t\t\t\t\t", style: {
-									border: "1px solid black",
-									padding: "0px",
-									height: "30px",
-									width: "30px"
-								} })
-						);
-					})
-				)
+				"div",
+				{ className: "mazeTileContainer" },
+				[].concat(_toConsumableArray(props.areasOfDimension)).reverse().map(function (area, index) {
+					return React.createElement("div", { key: index, className: "\n\t\t\t\t\t\tmazeTile\n\t\t\t\t\t\t" + (area.open ? "openMazeTile" : "walledMazeTile") + "\n\t\t\t\t\t\t" + (area.player ? "hasPlayer" : "") + "\n\t\t\t\t\t\t" + (area.hadPlayer ? "hadPlayer" : "") + "\n\t\t\t\t\t\t" + (props.movedUp ? "movedUp" : "movedDown") + "\n\t\t\t\t\t\t" + (area.goal ? "hasGoal" : "") + "\n\t\t\t\t\t\t" + (props.dimensionMoved == props.dimensionIndex ? "dimensionMoved" : "") + "\n\t\t\t\t\t\t" + ("dimensonTile" + props.dimensionIndex) + "\n\t\t\t\t\t\t", style: {} });
+				})
 			),
 			React.createElement(
 				"button",
 				{ className: "button", disabled: !props.moves.validDown, onClick: props.onClickDown },
-				"DOWN"
+				"\u2B07"
 			)
 		)
 	);
@@ -68,13 +54,31 @@ function Control(props) {
 var MazeGameContainer = function (_React$Component) {
 	_inherits(MazeGameContainer, _React$Component);
 
-	function MazeGameContainer() {
+	function MazeGameContainer(props) {
 		_classCallCheck(this, MazeGameContainer);
 
-		return _possibleConstructorReturn(this, (MazeGameContainer.__proto__ || Object.getPrototypeOf(MazeGameContainer)).apply(this, arguments));
+		var _this = _possibleConstructorReturn(this, (MazeGameContainer.__proto__ || Object.getPrototypeOf(MazeGameContainer)).call(this, props));
+
+		_this.state = {
+			gameStart: _this.props.gameStart
+		};
+		_this.state.timeDisplay = convertMsToMinutesSeconds(new Date() - _this.props.gameStart);
+		_this.updateTimer = _this.updateTimer.bind(_this);
+		_this.timerInterval = setInterval(_this.updateTimer, 20);
+		return _this;
 	}
 
 	_createClass(MazeGameContainer, [{
+		key: "updateTimer",
+		value: function updateTimer() {
+			if (!this.props.gameWon) {
+				var timeDisplay = convertMsToMinutesSeconds(new Date() - this.props.gameStart);
+				this.setState({
+					timeDisplay: timeDisplay
+				});
+			}
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			var _this2 = this;
@@ -85,6 +89,11 @@ var MazeGameContainer = function (_React$Component) {
 				React.createElement(
 					"div",
 					{ className: "whitePanel" },
+					React.createElement(
+						"div",
+						{ style: { textAlign: "center" } },
+						"Dimensions"
+					),
 					React.createElement(
 						"div",
 						{ style: {
@@ -106,10 +115,17 @@ var MazeGameContainer = function (_React$Component) {
 									},
 									onClickDown: function onClickDown() {
 										return _this2.props.handleClickDown(dimension);
-									}
+									},
+									movedUp: _this2.props.movedUp,
+									dimensionMoved: _this2.props.dimensionMoved
 								})
 							);
 						})
+					),
+					React.createElement(
+						"div",
+						null,
+						this.state.timeDisplay
 					),
 					React.createElement(
 						"div",
@@ -123,3 +139,15 @@ var MazeGameContainer = function (_React$Component) {
 
 	return MazeGameContainer;
 }(React.Component);
+
+function padToDigits(num, digits) {
+	return num.toString().padStart(digits, '0');
+}
+
+function convertMsToMinutesSeconds(milliseconds) {
+	var minutes = Math.floor(milliseconds / 60000);
+	var seconds = Math.round(milliseconds % 60000 / 1000);
+	var millis = milliseconds % 1000;
+
+	return padToDigits(minutes) + ":" + padToDigits(seconds, 2) + ":" + padToDigits(millis, 3);
+}

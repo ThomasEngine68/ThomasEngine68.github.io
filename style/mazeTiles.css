@@ -1,0 +1,93 @@
+.mazeTileContainer{
+	border-bottom: 1px solid black;
+}
+
+.mazeTile{
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	border-top: 1px solid black;
+	padding: 0px;
+	height: 30px;
+	width: 30px;
+	animation-duration: 0.15s;
+	animation-fill-mode: forwards;
+}
+
+.mazeTile.openMazeTile {
+	background-color: greenyellow;
+}
+.mazeTile.walledMazeTile {
+	background-color: green;
+}
+.mazeTile.hasPlayer, .mazeTile.hadPlayer {
+	background-image: url('../images/rabbit.png');
+}
+.mazeTile.hasGoal {
+	background-image: url('../images/carrot.png');
+}
+.mazeTile.hasPlayer.hasGoal {
+	background-image: url('../images/rabbit_carrot.png');
+}
+
+.hasPlayer.movedUp.dimensionMoved{animation-name: slideUpIn}
+.hadPlayer.movedUp.dimensionMoved{animation-name: slideUpOut}
+.hasPlayer.movedDown.dimensionMoved{animation-name: slideDownIn}
+.hadPlayer.movedDown.dimensionMoved{animation-name: slideDownOut}
+
+@keyframes slideUpIn {
+  from {
+		background-position: 0px 30px;
+  }
+  to {
+		background-position: 0px 0px;
+  }
+}
+@keyframes slideUpOut {
+  from {
+		background-position: 0px 0px;
+  }
+  to {
+		background-position: 0px -30px;
+  }
+}
+@keyframes slideDownIn {
+  from {
+		background-position: 0px -30px;
+  }
+  to {
+		background-position: 0px 0px;
+  }
+}
+@keyframes slideDownOut {
+  from {
+		background-position: 0px 0px;
+  }
+  to {
+		background-position: 0px 30px;
+  }
+}
+
+.dimensonTile0 {
+	border-left: 2px solid green;
+	border-right: 2px solid green;
+}
+.dimensonTile1 {
+	border-left: 2px solid blue;
+	border-right: 2px solid blue;
+}
+.dimensonTile2 {
+	border-left: 2px solid red;
+	border-right: 2px solid red;
+}	
+.dimensonTile3 {
+	border-left: 2px solid yellow;
+	border-right: 2px solid yellow;
+}	
+.dimensonTile4 {
+	border-left: 2px solid purple;
+	border-right: 2px solid purple;
+}	
+.dimensonTile5 {
+	border-left: 2px solid orange;
+	border-right: 2px solid orange;
+}		

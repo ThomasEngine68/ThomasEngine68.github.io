@@ -22,7 +22,7 @@ h1 {
 	border-radius: 5px;
 	color: white;
 	padding: 5px;
-	min-width: 70px;
+	min-width: 30px;
 	min-height: 30px;
 	text-align: center;
 	text-decoration: none;
@@ -42,22 +42,3 @@ h1 {
 	cursor: not-allowed;
 }
 
-td{
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
-}
-td.openMazeTile {
-	background-color: greenyellow;
-}
-td.walledMazeTile {
-	background-color: green;
-}
-td.hasPlayer {
-	background-image: url('../images/rabbit.png');
-}
-td.hasGoal {
-	background-image: url('../images/carrot.png');
-}
-td.hasPlayer.hasGoal {
-	background-image: url('../images/rabbit_carrot.png');
-}

@@ -18,15 +18,9 @@ var NewMazeForm = function (_React$Component) {
 
 		var _this = _possibleConstructorReturn(this, (NewMazeForm.__proto__ || Object.getPrototypeOf(NewMazeForm)).call(this, props));
 
-		_this.state = {
-			dimensionCount: 1,
-			mazeSize: [5],
-			forceBackTrack: false,
-			wallChance: 0.0,
-			created: true,
-			seed: parseInt(Math.random() * 10000)
-		};
-
+		_this.state = staticLevels[0][0];
+		_this.state.created = true;
+		_this.state.seed = parseInt(Math.random() * 10000);
 		_this.handleDimensionCountChange = _this.handleDimensionCountChange.bind(_this);
 		_this.handleDimensionSizeChange = _this.handleDimensionSizeChange.bind(_this);
 		_this.handleBackTrackChange = _this.handleBackTrackChange.bind(_this);
@@ -34,15 +28,6 @@ var NewMazeForm = function (_React$Component) {
 		_this.handleSubmit = _this.handleSubmit.bind(_this);
 		_this.handleWallChanceChange = _this.handleWallChanceChange.bind(_this);
 		_this.generateLevel = _this.generateLevel.bind(_this);
-		_this.generateLevel1 = _this.generateLevel1.bind(_this);
-		_this.generateLevel2 = _this.generateLevel2.bind(_this);
-		_this.generateLevel3 = _this.generateLevel3.bind(_this);
-		_this.generateLevel4 = _this.generateLevel4.bind(_this);
-		_this.generateLevel5 = _this.generateLevel5.bind(_this);
-		_this.generateLevel6 = _this.generateLevel6.bind(_this);
-		_this.generateLevel7 = _this.generateLevel7.bind(_this);
-
-		console.log(_this.state.created);
 		return _this;
 	}
 
@@ -94,6 +79,7 @@ var NewMazeForm = function (_React$Component) {
 		value: function handleDimensionCountChange(event) {
 			event.preventDefault();
 			var dimensionCount = parseInt(event.target.value);
+			//Set maze sizes to all dimensions
 			if (dimensionCount <= 6 && dimensionCount >= 1) {
 				var mazeSize = this.state.mazeSize;
 				if (mazeSize.length < dimensionCount) {
@@ -110,58 +96,19 @@ var NewMazeForm = function (_React$Component) {
 			}
 		}
 	}, {
-		key: "generateLevel1",
-		value: function generateLevel1() {
-			this.generateLevel(1, [5], false, 0.0);
-		}
-	}, {
-		key: "generateLevel2",
-		value: function generateLevel2() {
-			this.generateLevel(2, [6, 6], true, 0.55);
-		}
-	}, {
-		key: "generateLevel3",
-		value: function generateLevel3() {
-			this.generateLevel(3, [5, 5, 5], true, 0.6);
-		}
-	}, {
-		key: "generateLevel4",
-		value: function generateLevel4() {
-			this.generateLevel(4, [4, 4, 4, 4], true, 0.6);
-		}
-	}, {
-		key: "generateLevel5",
-		value: function generateLevel5() {
-			this.generateLevel(5, [4, 4, 4, 4, 4], true, 0.7);
-		}
-	}, {
-		key: "generateLevel6",
-		value: function generateLevel6() {
-			this.generateLevel(6, [4, 4, 4, 4, 3, 3], true, 0.75);
-		}
-	}, {
-		key: "generateLevel7",
-		value: function generateLevel7() {
-			this.generateLevel(6, [5, 5, 4, 4, 4, 4], true, 0.77);
-		}
-	}, {
 		key: "generateLevel",
-		value: function generateLevel(dimensionCount, mazeSize, forceBackTrack, wallChance, seed) {
+		value: function generateLevel(params, randomizeSeed) {
 			var _this2 = this;
 
-			if (!seed) seed = parseInt(Math.random() * 10000);
-			this.setState({
-				dimensionCount: dimensionCount,
-				mazeSize: mazeSize,
-				forceBackTrack: forceBackTrack,
-				wallChance: wallChance,
-				created: false,
-				seed: seed
-			}, function () {
+			if (randomizeSeed) params.seed = parseInt(Math.random() * 10000);
+			console.log(params.seed);
+			params.created = false;
+			this.setState(params, function () {
+				//For some reason this timeout is needed
 				setTimeout(function () {
 					_this2.handleSubmit();
 					_this2.setState({ created: true });
-				}, 100);
+				}, 10);
 			});
 		}
 	}, {
@@ -179,41 +126,24 @@ var NewMazeForm = function (_React$Component) {
 				React.createElement(
 					"div",
 					{ style: { display: "flex", flexWrap: "wrap" } },
-					React.createElement(
-						"button",
-						{ className: "button", onClick: this.generateLevel1 },
-						"Level 1"
-					),
-					React.createElement(
-						"button",
-						{ className: "button", onClick: this.generateLevel2 },
-						"Level 2"
-					),
-					React.createElement(
-						"button",
-						{ className: "button", onClick: this.generateLevel3 },
-						"Level 3"
-					),
-					React.createElement(
-						"button",
-						{ className: "button", onClick: this.generateLevel4 },
-						"Level 4"
-					),
-					React.createElement(
-						"button",
-						{ className: "button", onClick: this.generateLevel5 },
-						"Level 5"
-					),
-					React.createElement(
-						"button",
-						{ className: "button", onClick: this.generateLevel6 },
-						"Level 6"
-					),
-					React.createElement(
-						"button",
-						{ className: "button", onClick: this.generateLevel7 },
-						"Level 7"
-					)
+					[].concat(_toConsumableArray(staticLevels)).map(function (levels, dimensionCount) {
+						return React.createElement(
+							"div",
+							{ key: "dimension" + dimensionCount,
+								style: { display: "flex", flexDirection: "column" } },
+							[].concat(_toConsumableArray(levels)).map(function (level, index) {
+								return React.createElement(
+									"button",
+									{ key: "level" + dimensionCount + "_" + index, className: "button",
+										onClick: function onClick() {
+											return _this3.generateLevel(level, true);
+										} },
+									"Level",
+									dimensionCount + 1 + "." + (index + 1)
+								);
+							})
+						);
+					})
 				),
 				React.createElement(
 					"form",
