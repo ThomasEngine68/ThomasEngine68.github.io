@@ -33,9 +33,9 @@ var NewMazeForm = function (_React$Component) {
 
 	_createClass(NewMazeForm, [{
 		key: "handleSubmit",
-		value: function handleSubmit(event) {
+		value: function handleSubmit(event, levelName) {
 			if (event) event.preventDefault();
-			this.props.submitMazeSize(this.state.mazeSize, this.state.forceBackTrack, this.state.wallChance, this.state.seed);
+			this.props.submitMazeForm(this.state.mazeSize, this.state.forceBackTrack, this.state.wallChance, this.state.seed, levelName);
 		}
 	}, {
 		key: "handleBackTrackChange",
@@ -97,7 +97,7 @@ var NewMazeForm = function (_React$Component) {
 		}
 	}, {
 		key: "generateLevel",
-		value: function generateLevel(params, randomizeSeed) {
+		value: function generateLevel(params, randomizeSeed, levelName) {
 			var _this2 = this;
 
 			if (randomizeSeed) params.seed = parseInt(Math.random() * 10000);
@@ -106,7 +106,7 @@ var NewMazeForm = function (_React$Component) {
 			this.setState(params, function () {
 				//For some reason this timeout is needed
 				setTimeout(function () {
-					_this2.handleSubmit();
+					_this2.handleSubmit(null, levelName);
 					_this2.setState({ created: true });
 				}, 10);
 			});
@@ -136,10 +136,9 @@ var NewMazeForm = function (_React$Component) {
 									"button",
 									{ key: "level" + dimensionCount + "_" + index, className: "button",
 										onClick: function onClick() {
-											return _this3.generateLevel(level, true);
+											return _this3.generateLevel(level, true, getLevelName(dimensionCount, index));
 										} },
-									"Level",
-									dimensionCount + 1 + "." + (index + 1)
+									getLevelName(dimensionCount, index)
 								);
 							})
 						);

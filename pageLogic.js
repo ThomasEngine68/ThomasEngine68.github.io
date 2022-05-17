@@ -26,26 +26,37 @@ var PageContainer = function (_React$Component) {
 			mazeSize: mazeSize,
 			maze: maze,
 			playerCoordinates: playerCoordinates,
+			previousPlayerCoordinates: playerCoordinates,
 			movesByDimension: movesByDimension,
 			playableMaze: true,
 			gameWon: false,
 			gameStart: new Date(),
 			previousArea: null,
 			movedUp: true,
-			dimensionMoved: -1
+			dimensionMoved: -1,
+			levelName: getLevelName(0, 0)
 		};
 		_this.createNewMaze = _this.createNewMaze.bind(_this);
 		_this.handleMove = _this.handleMove.bind(_this);
 		_this.handleClickUp = _this.handleClickUp.bind(_this);
 		_this.handleClickDown = _this.handleClickDown.bind(_this);
 		_this.validMove = _this.validMove.bind(_this);
+		_this.nextLevel = _this.nextLevel.bind(_this);
 		addMoveKeybinds(_this.handleMove);
 		return _this;
 	}
 
 	_createClass(PageContainer, [{
+		key: "nextLevel",
+		value: function nextLevel() {
+			var next = getNextLevelFromName(this.state.levelName);
+			var level = next.level;
+			var name = next.name;
+			this.createNewMaze(level.mazeSize, level.forceBackTrack, level.wallChance, Math.random(), name);
+		}
+	}, {
 		key: "createNewMaze",
-		value: function createNewMaze(mazeSize, forceBackTrack, wallChance, seed) {
+		value: function createNewMaze(mazeSize, forceBackTrack, wallChance, seed, levelName) {
 			var playerCoordinates = [];
 			mazeSize.forEach(function (size) {
 				playerCoordinates.push(0);
@@ -57,10 +68,13 @@ var PageContainer = function (_React$Component) {
 					mazeSize: mazeSize,
 					maze: maze,
 					playerCoordinates: playerCoordinates,
+					previousPlayerCoordinates: playerCoordinates,
 					movesByDimension: movesByDimension,
 					playableMaze: true,
 					gameWon: false,
-					gameStart: new Date()
+					gameStart: new Date(),
+					dimensionMoved: -1,
+					levelName: levelName
 				});
 			} else {
 				this.setState({
@@ -75,6 +89,7 @@ var PageContainer = function (_React$Component) {
 			if (!this.validMove(dimension, up)) return;
 			var mazeSize = this.state.mazeSize.slice();
 			var maze = this.state.maze.slice();
+			var previousPlayerCoordinates = [].concat(_toConsumableArray(this.state.playerCoordinates));
 			var playerCoordinates = [].concat(_toConsumableArray(this.state.playerCoordinates));
 			var previousArea = getAreaOfCoordinates(maze, playerCoordinates);
 			previousArea.player = false;
@@ -90,6 +105,7 @@ var PageContainer = function (_React$Component) {
 				mazeSize: mazeSize,
 				maze: maze,
 				playerCoordinates: playerCoordinates,
+				previousPlayerCoordinates: previousPlayerCoordinates,
 				movesByDimension: movesByDimension,
 				gameWon: gameWon,
 				previousArea: previousArea,
@@ -133,14 +149,17 @@ var PageContainer = function (_React$Component) {
 					mazeSize: this.state.mazeSize,
 					maze: this.state.maze,
 					playerCoordinates: this.state.playerCoordinates,
+					previousPlayerCoordinates: this.state.previousPlayerCoordinates,
 					movesByDimension: this.state.movesByDimension,
 					gameWon: this.state.gameWon,
 					gameStart: this.state.gameStart,
 					movedUp: this.state.movedUp,
-					dimensionMoved: this.state.dimensionMoved
+					dimensionMoved: this.state.dimensionMoved,
+					levelName: this.state.levelName,
+					nextLevelFunction: this.nextLevel
 				}),
 				React.createElement(NewMazeForm, {
-					submitMazeSize: this.createNewMaze
+					submitMazeForm: this.createNewMaze
 				}),
 				this.state.playableMaze ? null : "COULDNT GENERATE PLAYABLE MAP"
 			);

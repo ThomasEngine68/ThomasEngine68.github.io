@@ -39,7 +39,8 @@ function Control(props) {
 				"div",
 				{ className: "mazeTileContainer" },
 				[].concat(_toConsumableArray(props.areasOfDimension)).reverse().map(function (area, index) {
-					return React.createElement("div", { key: index, className: "\n\t\t\t\t\t\tmazeTile\n\t\t\t\t\t\t" + (area.open ? "openMazeTile" : "walledMazeTile") + "\n\t\t\t\t\t\t" + (area.player ? "hasPlayer" : "") + "\n\t\t\t\t\t\t" + (area.hadPlayer ? "hadPlayer" : "") + "\n\t\t\t\t\t\t" + (props.movedUp ? "movedUp" : "movedDown") + "\n\t\t\t\t\t\t" + (area.goal ? "hasGoal" : "") + "\n\t\t\t\t\t\t" + (props.dimensionMoved == props.dimensionIndex ? "dimensionMoved" : "") + "\n\t\t\t\t\t\t" + ("dimensonTile" + props.dimensionIndex) + "\n\t\t\t\t\t\t", style: {} });
+					return React.createElement("div", { key: Math.random(), className: "\n\t\t\t\t\t\tmazeTile\n\t\t\t\t\t\t" + (area.open ? "openMazeTile" : "walledMazeTile") + "\n\t\t\t\t\t\t" + (props.reversedPreviousAreasOfDimension[index].open ? "wasOpen" : "wasWalled") + "\n\t\t\t\t\t\t" + (area.player ? "hasPlayer" : "") + "\n\t\t\t\t\t\t" + (area.hadPlayer ? "hadPlayer" : "") + "\n\t\t\t\t\t\t" + (props.movedUp ? "movedUp" : "movedDown") + "\n\t\t\t\t\t\t" + (area.goal ? "hasGoal" : "") + "\n\t\t\t\t\t\t" + (props.reversedPreviousAreasOfDimension[index].goal ? "hadGoal" : "") + "\n\t\t\t\t\t\t" + (props.dimensionMoved == props.dimensionIndex ? "dimensionMoved" : "notDimensionMoved") + "\n\t\t\t\t\t\t" + ("dimensonTile" + props.dimensionIndex) + "\n\t\t\t\t\t\t"
+					});
 				})
 			),
 			React.createElement(
@@ -51,13 +52,13 @@ function Control(props) {
 	);
 }
 
-var MazeGameContainer = function (_React$Component) {
-	_inherits(MazeGameContainer, _React$Component);
+var Timer = function (_React$Component) {
+	_inherits(Timer, _React$Component);
 
-	function MazeGameContainer(props) {
-		_classCallCheck(this, MazeGameContainer);
+	function Timer(props) {
+		_classCallCheck(this, Timer);
 
-		var _this = _possibleConstructorReturn(this, (MazeGameContainer.__proto__ || Object.getPrototypeOf(MazeGameContainer)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
 
 		_this.state = {
 			gameStart: _this.props.gameStart
@@ -68,7 +69,7 @@ var MazeGameContainer = function (_React$Component) {
 		return _this;
 	}
 
-	_createClass(MazeGameContainer, [{
+	_createClass(Timer, [{
 		key: "updateTimer",
 		value: function updateTimer() {
 			if (!this.props.gameWon) {
@@ -81,7 +82,39 @@ var MazeGameContainer = function (_React$Component) {
 	}, {
 		key: "render",
 		value: function render() {
-			var _this2 = this;
+			return React.createElement(
+				"div",
+				{ style: { display: "flex", justifyContent: "space-between" } },
+				React.createElement(
+					"div",
+					null,
+					this.state.timeDisplay
+				),
+				React.createElement(
+					"div",
+					null,
+					this.props.levelName
+				)
+			);
+		}
+	}]);
+
+	return Timer;
+}(React.Component);
+
+var MazeGameContainer = function (_React$Component2) {
+	_inherits(MazeGameContainer, _React$Component2);
+
+	function MazeGameContainer(props) {
+		_classCallCheck(this, MazeGameContainer);
+
+		return _possibleConstructorReturn(this, (MazeGameContainer.__proto__ || Object.getPrototypeOf(MazeGameContainer)).call(this, props));
+	}
+
+	_createClass(MazeGameContainer, [{
+		key: "render",
+		value: function render() {
+			var _this3 = this;
 
 			return React.createElement(
 				"div",
@@ -108,16 +141,17 @@ var MazeGameContainer = function (_React$Component) {
 								{ key: dimension },
 								React.createElement(Control, {
 									dimensionIndex: dimension,
-									areasOfDimension: getAreasOfDimension(_this2.props.maze, _this2.props.playerCoordinates, dimension),
-									moves: _this2.props.movesByDimension[dimension],
+									areasOfDimension: getAreasOfDimension(_this3.props.maze, _this3.props.playerCoordinates, dimension),
+									reversedPreviousAreasOfDimension: [].concat(_toConsumableArray(getAreasOfDimension(_this3.props.maze, _this3.props.previousPlayerCoordinates, dimension))).reverse(),
+									moves: _this3.props.movesByDimension[dimension],
 									onClickUp: function onClickUp() {
-										return _this2.props.handleClickUp(dimension);
+										return _this3.props.handleClickUp(dimension);
 									},
 									onClickDown: function onClickDown() {
-										return _this2.props.handleClickDown(dimension);
+										return _this3.props.handleClickDown(dimension);
 									},
-									movedUp: _this2.props.movedUp,
-									dimensionMoved: _this2.props.dimensionMoved
+									movedUp: _this3.props.movedUp,
+									dimensionMoved: _this3.props.dimensionMoved
 								})
 							);
 						})
@@ -125,12 +159,29 @@ var MazeGameContainer = function (_React$Component) {
 					React.createElement(
 						"div",
 						null,
-						this.state.timeDisplay
+						React.createElement(Timer, {
+							gameStart: this.props.gameStart,
+							gameWon: this.props.gameWon,
+							levelName: this.props.levelName
+						})
 					),
 					React.createElement(
 						"div",
-						null,
-						this.props.gameWon ? "YOU WON THE GAME! 🥳🎉💯🎉🥳🥕🥕🥕" : null
+						{ style: {
+								display: this.props.gameWon ? "flex" : "none",
+								flexDirection: "column"
+							} },
+						React.createElement(
+							"div",
+							null,
+							"YOU WON! \uD83E\uDD73\uD83C\uDF89\uD83D\uDCAF\uD83C\uDF89\uD83E\uDD73\uD83E\uDD55\uD83E\uDD55\uD83E\uDD55"
+						),
+						React.createElement(
+							"button",
+							{ className: "button", onClick: this.props.nextLevelFunction,
+								style: { display: this.props.levelName ? "block" : "none" } },
+							"Next"
+						)
 					)
 				)
 			);

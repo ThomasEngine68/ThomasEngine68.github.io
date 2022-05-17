@@ -83,3 +83,22 @@ var staticLevels = [
 		wallChance: 0.77,
 	}],
 ]
+
+function getLevelName(i1, i2){
+	return "Level" + (i1 + 1) + "." + (i2 + 1)
+}
+
+function getNextLevelFromName(levelName){
+		var nextLevel = null;
+		var i1 = parseInt(levelName.substring(5, 6));
+		var i2 = parseInt(levelName.substring(7, 8));
+		var levelArray = staticLevels[i1 - 1];
+		if(levelArray.length > i2) {
+			nextLevel = {level : levelArray[i2], name: getLevelName(i1 - 1, i2)}
+		}
+		else if(staticLevels.length > i1) 
+		{
+			nextLevel =  {level : staticLevels[i1][0], name: getLevelName(i1, 0)};
+		}
+		return nextLevel;
+}
